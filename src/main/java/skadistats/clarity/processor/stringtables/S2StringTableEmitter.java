@@ -29,14 +29,20 @@ public class S2StringTableEmitter extends BaseStringTableEmitter {
     @OnMessage(S2NetMessages.CSVCMsg_CreateStringTable.class)
     public void onCreateStringTable(S2NetMessages.CSVCMsg_CreateStringTable message) throws IOException {
         if (isProcessed(message.getName())) {
-            StringTable table = new StringTable(
-                message.getName(),
-                100,
-                message.getUserDataFixedSize(),
-                message.getUserDataSize(),
-                message.getUserDataSizeBits(),
-                message.getFlags()
-            );
+            StringTable table;
+
+            if (stringTables.forName(message.getName()) != null) {
+                table = stringTables.forName(message.getName());
+            } else {
+                table = new StringTable(
+                    message.getName(),
+                    100,
+                    message.getUserDataFixedSize(),
+                    message.getUserDataSize(),
+                    message.getUserDataSizeBits(),
+                    message.getFlags()
+                );
+            }
 
             ByteString data = message.getStringData();
             if (message.getDataCompressed()) {
